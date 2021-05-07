@@ -1,0 +1,61 @@
+---
+title: "Final Project Car Accidents"
+author: "Chad Stephens"
+date: "5/6/2021"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Required Packages:
+
+if(!require(dslabs)) install.packages("dslabs", repos = "http://cran.us.r-project.org") # We need this for read_csv as well
+# as ggplot2 functions.
+
+
+```
+```{r include=FALSE}
+# Required Packages:
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org") # We need this for read_csv as well
+# as ggplot2 functions.
+```
+
+## Introduction
+This assignment is the final project for the IS 4300 R coding class. Each student chose a data base to study and the provide analyisi to Dr. Josh Holland. For this project the dataset we will be using is the DUI dataset. The DUI dataset is one that is used to track the number of DUI's per state and fatalities by car accident per state. This dataset has six variables that are shown below. Those variables are State, DUI(Driving Under the Influence),Fatalities, Population, Sunday.Sales, and fat_rate. The ones we will be analyzing is **fat_rate** which is the fatality rate per 10000 people, **Population**, and **DUI**(Driving Under the Influence charges). We will be trying to find if there is any correlation between fatality rate and other variables in this dataset. 
+```{r}
+dui <- read.csv(file = "C:/Users/Chad Stephens/Desktop/Excel Data Workbooks/DUI.csv",header = TRUE)
+DUI_p <- as.data.frame(dui)
+#this makes the dataset into a data frame
+DUI_p <- DUI_p %>% mutate(fat_rate = Fatalities/10000) #fat_rate is fatalities 10000 people
+head(DUI_p)
+
+```
+## Analysis
+This is the a two sample t-test to find if there is a significant level of correlation between the amount of DUI's per state and the fatality rate per state. As shown below there is a significant relationship between the two variables because the p-value is well **below** .05 at 1.003e-06. Because the t-test has a p-value below .05 this means the null hypothesis should be rejected. This analysis claims that as DUI's increase fatality rate increases. This shows that these two variables go hand in hand.
+```{r}
+ 
+
+t.test(DUI_p$DUI,DUI_p$fat_rate)
+```
+
+
+## Visualization
+This visualization shows the correlation between DUI and the fatality rate. As shown in the graph there are a few outliers with higher fatality in comparison to the number of DUI's. As shown by this graph it shows the correlation that as DUI's increase the fatality rate seems to increase. The second is a visualization of a sample of deaths by DUI in TN. This barplot shows the probability of at least one death per 50 DUI's in the state of TN. Although 0 still has the highest probabilty the likely hood of a death is still very high. 
+
+
+```{r pressure, echo=FALSE}
+dui_g <- DUI_p %>% ggplot()
+#data <- DUI %>% data.frame(Fatalities,DUI)
+
+dui_g + geom_point(aes(DUI,fat_rate))+labs(y="Fatality Rate",title = "Correlation between Fatality Rate & DUI")
+
+samp1 <- rhyper(10000,251, 23150,50)
+tenSamp <-table(samp1)
+barplot(tenSamp, xlab="Deaths",col="darkred",main="Deaths per 50 people of all DUI's in TN")
+```
+
+## Conclusion
+To conclude using the fatality rate which is deaths per every 10000 people and DUI's there is a correlation that shows as DUI's increase the fatality rate increases. It is important to not that correlation does not always mean causation, but it is note worthy how low the p-value was for this t-test. It is also important to notice that per 50 DUI's in the state of TN there is a decent probability that a death will occur.
